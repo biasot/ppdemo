@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<img alt="cemarking" src="././../../Content/paypal_payment_process.png" width="645" height="103" />
+
+@using (Html.BeginForm("PostToPaypal", "Home"))
+{
+<div>
+    <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+                Membership:
+            </td>
+            <td>
+                <input type="text" name="item" value="Premium" readonly />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Price:
+            </td>
+            <td>
+                $<input type="text" name="amount" value="5" readonly />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                User ID:
+            </td>
+            <td>
+                $<input type="text" name="custom" value="patient555" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <input type="submit" name="btnsubmit" value="Pay with Paypal" />
+            </td>
+        </tr>
+    </table>
+</div>
+}
