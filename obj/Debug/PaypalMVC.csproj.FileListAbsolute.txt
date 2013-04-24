@@ -25,8 +25,8 @@ D:\dtools\_paypal\www\PaypalMVC\obj\Debug\PaypalMVC.dll
 D:\dtools\_paypal\www\PaypalMVC\obj\Debug\PaypalMVC.pdb
 D:\MMM\PaypalMVC\bin\PaypalMVC.dll
 D:\MMM\PaypalMVC\bin\PaypalMVC.pdb
-D:\MMM\PaypalMVC\bin\EntityFramework.xml
-D:\MMM\PaypalMVC\bin\WebActivator.pdb
 D:\MMM\PaypalMVC\obj\Debug\ResolveAssemblyReference.cache
 D:\MMM\PaypalMVC\obj\Debug\PaypalMVC.dll
 D:\MMM\PaypalMVC\obj\Debug\PaypalMVC.pdb
+D:\MMM\PaypalMVC\bin\PayPalCoreSDK.dll
+D:\MMM\PaypalMVC\bin\PayPalMerchantSDK.dll

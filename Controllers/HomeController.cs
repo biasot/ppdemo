@@ -8,6 +8,9 @@ using System.Net;
 using System.IO;
 using System.Text;
 
+using PayPal.PayPalAPIInterfaceService;
+using PayPal.PayPalAPIInterfaceService.Model;
+
 namespace PaypalMVC.Controllers
 {
     public class HomeController : Controller
@@ -27,7 +30,7 @@ namespace PaypalMVC.Controllers
         public ActionResult PostToPayPal(string item , string amount, string custom)
         {
             PaypalMVC.Models.Paypal paypal = new Models.Paypal();
-            paypal.cmd = "_s-xclick";
+            paypal.cmd = "_xclick";
             paypal.business = ConfigurationManager.AppSettings["BusinessAccountKey"];
 
             bool useSandbox = Convert.ToBoolean(ConfigurationManager.AppSettings["UseSandbox"]);
@@ -47,40 +50,100 @@ namespace PaypalMVC.Controllers
             paypal.custom = custom;
             return View(paypal);
         }
+/*
+        public ActionResult Members()
+        {
+            TransactionSearchRequestType request = new TransactionSearchRequestType();
+            request.StartDate = DateTime.Now.AddDays(-1000).ToString("yyyy-MM-ddTHH:mm:ss");
+            TransactionSearchReq wrapper = new TransactionSearchReq();
+            wrapper.TransactionSearchRequest = request;
+            PayPalAPIInterfaceServiceService service = new PayPalAPIInterfaceServiceService();
+            TransactionSearchResponseType transactionDetails = service.TransactionSearch(wrapper);
 
+            // Check for API return status
+
+            CurrContext.Items.Add("Response_apiName", "TransactionSearch");
+            CurrContext.Items.Add("Response_redirectURL", null);
+            CurrContext.Items.Add("Response_requestPayload", service.getLastRequest());
+            CurrContext.Items.Add("Response_responsePayload", service.getLastResponse());
+
+            Dictionary<string, string> keyParameters = new Dictionary<string, string>();
+            keyParameters.Add("Correlation Id", response.CorrelationID);
+            keyParameters.Add("API Result", response.Ack.ToString());
+
+            if (response.Errors != null && response.Errors.Count > 0)
+            {
+                CurrContext.Items.Add("Response_error", response.Errors);
+            }
+            else
+            {
+                CurrContext.Items.Add("Response_error", null);
+            }
+
+            if(!response.Ack.Equals(AckCodeType.FAILURE))
+            {
+                keyParameters.Add("Total matching transactions", response.PaymentTransactions.Count.ToString());
+
+                for (int i = 0; i < response.PaymentTransactions.Count; i++ )
+                {
+                    PaymentTransactionSearchResultType result = response.PaymentTransactions[i];
+                    String label = "Result " + (i+1);
+                    keyParameters.Add(label + " Payer", result.Payer);
+                    keyParameters.Add(label + " Transaction Id", result.TransactionID);
+                    keyParameters.Add(label + " Payment status", result.Status);
+                    keyParameters.Add(label + " Payment timestamp", result.Timestamp);
+                    keyParameters.Add(label + " Transaction type", result.Type);
+                    if (result.NetAmount != null)
+                    {
+                        keyParameters.Add(label + " Net amount",
+                            result.NetAmount.value + result.NetAmount.currencyID.ToString());
+                    }
+                    if (result.GrossAmount != null)
+                    {
+                        keyParameters.Add(label + " Gross amount",
+                            result.GrossAmount.value + result.GrossAmount.currencyID.ToString());
+                    }
+                }
+            }
+            CurrContext.Items.Add("Response_keyResponseObject", keyParameters);
+            Server.Transfer("../APIResponse.aspx");
+
+        }
+*/
         public ActionResult IPN()
         {
             // Receive IPN request from PayPal and parse all the variables returned
             var formVals = new Dictionary<string, string>();
             formVals.Add("cmd", "_notify-validate");
  
-            // if you want to use the PayPal sandbox change this from false to true
             string response = GetPayPalResponse(formVals);
  
             if (response == "VERIFIED")
             {
-                string transactionID = Request["txn_id"];
-                string sAmountPaid = Request["mc_gross"];
-                string userID = Request["custom"];
- 
+                string transactionID = ViewBag.tID = Request["txn_id"];
+                string sAmountPaid = ViewBag.amount = Request["mc_gross"];
+                string userID = ViewBag.userID = Request["custom"];
+
+                ViewBag.Message = "Thanks for purchase, enjoy benefits of the Premium membership!";
+
                 //validate the order
                 Decimal amountPaid = 0;
                 Decimal.TryParse(sAmountPaid, out amountPaid);
  
-                if (sAmountPaid == "5")
+                if (sAmountPaid == "5.00")
                 {
                     // take the information returned and store this into a subscription table
- 
                     return View();
- 
                 }
                 else
                 {
                     // let fail - this is the IPN so there is no viewer
+                    ViewBag.Message = "Sorry, transaction error occured, please let our support service to handle the issue. Please save information below for your reference:";
+                    return View();
                 }
             }
  
-            return View();
+            return RedirectToAction("Index", "Home");
         }
 
         string GetPayPalResponse(Dictionary<string, string> formVals)
